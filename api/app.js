@@ -20,17 +20,21 @@ app.get('/events', (req, res) => {
             categories.category_name,
             organisations.name AS organisation_name
         FROM events
-        JOIN categories 
+        JOIN categories
             ON events.category_id = categories.category_id
-        JOIN organisations 
+        JOIN organisations
             ON events.organisation_id = organisations.organisation_id
-        ORDER BY event_date ASC
+        WHERE events.is_active = TRUE
+          AND events.event_date >= CURDATE()
+        ORDER BY events.event_date ASC
     `;
 
     db.query(sql, (err, results) => {
         if (err) {
             console.error(err);
-            res.status(500).json({ error: 'Failed to retrieve events.' });
+            res.status(500).json({
+                error: 'Failed to retrieve events.'
+            });
             return;
         }
 
